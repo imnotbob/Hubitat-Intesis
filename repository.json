@@ -19,6 +19,12 @@
       "category": "Integration",
       "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-NuHeat/master/packageManager.json",
       "description": "nuHeat Signature Thermostat for Hubitat"
+    },
+    {
+      "name": "enphase Solar",
+      "category": "Integration",
+      "location": "https://raw.githubusercontent.com/imnotbob/EnvoyHE/master/packageManager.json",
+      "description": "Monitor enPhase Solar Production for Hubitat"
     }
   ]
 }
