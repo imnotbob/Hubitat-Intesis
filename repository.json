@@ -7,6 +7,18 @@
       "category": "Integration",
       "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/packageManager.json",
       "description": "intesisHome Thermostat for Hubitat"
+    },
+    {
+      "name": "tankUtility",
+      "category": "Integration",
+      "location": "https://raw.githubusercontent.com/imnotbob/tankUtility/master/packageManager.json",
+      "description": "tankUtility Propane tank monitoring for Hubitat"
+    },
+    {
+      "name": "nuHeat",
+      "category": "Integration",
+      "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-NuHeat/master/packageManager.json",
+      "description": "nuHeat Signature Thermostat for Hubitat"
     }
   ]
 }
