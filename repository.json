@@ -3,25 +3,25 @@
   "gitHubUrl": "“https://github.com/imnotbob”",
   "packages": [
     {
-      "name": "intesisHome",
+      "name": "IntesisHome",
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/packageManager.json",
       "description": "intesisHome Thermostat for Hubitat"
     },
     {
-      "name": "tankUtility",
+      "name": "TankUtility",
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/imnotbob/tankUtility/master/packageManager.json",
       "description": "tankUtility Propane tank monitoring for Hubitat"
     },
     {
-      "name": "nuHeat",
+      "name": "NuHeat",
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-NuHeat/master/packageManager.json",
       "description": "nuHeat Signature Thermostat for Hubitat"
     },
     {
-      "name": "enphase Solar",
+      "name": "Enphase Solar",
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/imnotbob/EnvoyHE/master/packageManager.json",
       "description": "Monitor enPhase Solar Production for Hubitat"
