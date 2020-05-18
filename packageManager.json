@@ -1,0 +1,35 @@
+{
+  "packageName": "intesisHome",
+  "author": "nh.schottfam",
+  "minimumHEVersion": "2.1.9",
+  "dateReleased": "2020-05-17",
+  "apps": [
+    {
+      "id": "6d417f09-a857-4082-b06d-9e853a3ac472",
+      "name": "IntesisHome Connect",
+      "namespace": "imnotbob",
+      "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/apps/IntesisConnect.groovy",
+      "required": true,
+      "oauth": false
+    }
+  ],
+  "drivers": [
+    {
+      "id": "9043611f-bd4d-4800-a627-20b00f2da930",
+      "name": "IntesisHome Telnet",
+      "namespace": "imnotbob",
+      "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/drivers/intesisTelnet.groovy",
+      "required": true
+    },
+    {
+      "id": "6bd07266-2b85-463b-83f2-ce51ccb34081",
+      "name": "IntesisHome HVAC",
+      "namespace": "imnotbob",
+      "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/drivers/intesishome.groovy",
+      "required": true
+    }
+  ],
+  "version": "1.0.0",
+  "releaseNotes": "Latest release",
+  "communityLink": "https://community.hubitat.com/t/intesishome-integration/41142"
+}
