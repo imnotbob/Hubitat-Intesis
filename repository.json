@@ -1,0 +1,12 @@
+{
+  "author": "nh.schottfam",
+  "gitHubUrl": "“https://github.com/imnotbob”",
+  "packages": [
+    {
+      "name": "intesisHome",
+      "category": "Integration",
+      "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/packageManager.json",
+      "description": "intesisHome Thermostat for Hubitat"
+    }
+  ]
+}
