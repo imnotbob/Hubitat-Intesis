@@ -3,7 +3,7 @@
  *
  * Author: ERS
  *       based off device work by Martin Blomgren
- * Last update: 2019-12-14
+ * Last update: 2019-05-19
  *
  * Thanks to James Nimmo for the massive work with the Python IntesisHome module
  * (https://github.com/jnimmo/pyIntesisHome)
@@ -70,7 +70,7 @@ metadata {
 void initialize() {
 	debug "initialize", ""
 	state.enabled = true
-	if(state.connected) checkLastReceived()
+	if((Boolean)state.connected) checkLastReceived()
 	else connect()
 }
 
@@ -95,7 +95,7 @@ void updated() {
 
 void connect() {
 	state.enabled = true
-	if(!state.connected) {
+	if(!(Boolean)state.connected) {
 		def myVars = parent.getParams()
 		state.server = myVars.server
 		state.serverPort = myVars.port
@@ -138,7 +138,7 @@ void connectionMade() {
 }
 
 void sendMsg(String msg) {
-	if(!state.connected) { log.warn "sendMsg when not connected" }
+	if(!(Boolean)state.connected) { log.warn "sendMsg when not connected" }
 	sendHubCommand(new hubitat.device.HubAction(msg, hubitat.device.Protocol.TELNET))
 }
 
@@ -146,7 +146,7 @@ void stop() {
 	debug "stop", ""
 	state.enabled = false
 //	device.updateSetting("enabled",[value:"false",type:"bool"])
-	if(state.connected) {
+	if((Boolean)state.connected) {
 		state.connected = false
 		telnetClose()
 	}
@@ -178,7 +178,7 @@ void parse(String message) {
 			break
 
 		case "status":
-			//updateDeviceState(Int deviceId, Int uid, short value)
+			//updateDeviceState(Integer deviceId, Integer uid, Short value)
 			parent.updateDeviceState(messageJson.data.deviceId, messageJson.data.uid, (Short)messageJson.data.value)
 			break
 
@@ -194,14 +194,14 @@ void parse(String message) {
 }
 
 void checkLastReceived() {
-	long t0 = now()
-	def t1 = state.lastReceived
-	if (state.connected && t0 > (t1 + 300000)) {   // 5 mins no data
+	Long t0 = now()
+	Long t1 = state.lastReceived
+	if ((Boolean)state.connected && t0 > (t1 + 300000L)) {   // 5 mins no data
 		debug "checkLastReceived", "Telnet connection dropped...lastReceived: ${t1}"
 		endConnection()
 		telnetClose()
 		parent.telnetDown(state.enabled)
-	} else if(!state.connected) parent.telnetDown(state.enabled)
+	} else if(!(Boolean)state.connected) parent.telnetDown(state.enabled)
 }
 
 void endConnection() {

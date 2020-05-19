@@ -3,7 +3,7 @@
  *
  * Author: ERS
  *       based off device work by Martin Blomgren
- * Last update: 2019-12-14
+ * Last update: 2019-05-19
  *
  * Licensed under the Apache License, Version 2.0 (the 'License'); you may not
  * use this file except in compliance with the License. You may obtain a copy
@@ -199,7 +199,7 @@ void telnetUp() {
 	atomicState.telnet = true
 }
 
-void telnetDown(boolean runPoll=false) {
+void telnetDown(Boolean runPoll=false) {
 	if (logEnable) debug("telnetDown(${runPoll})", "")
 	atomicState.telnet = false
 	atomicState.server = null
@@ -209,7 +209,7 @@ void telnetDown(boolean runPoll=false) {
 	else if(enabled) runIn(900, pollStatus)
 }
 
-void queuePollStatus(int delay=3) {
+void queuePollStatus(Integer delay=3) {
 	if (logEnable) debug("queuePollStatus()", "")
 	runIn(delay, pollStatus)
 }
@@ -225,7 +225,7 @@ def getTelnetDev() {
 	myDev
 }
 
-void updateDeviceState(long deviceId, int uid, short value) {
+void updateDeviceState(Long deviceId, Integer uid, Short value) {
 	def t0 =  "${deviceId}"
 	def tdev = app.getChildDevice(t0)
 	if(tdev) tdev.updateDeviceState(deviceId, uid, value)

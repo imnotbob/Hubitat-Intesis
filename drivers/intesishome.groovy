@@ -3,7 +3,7 @@
  *
  * Author: ERS
  *       based off device work by Martin Blomgren
- * Last update: 2020-3-25
+ * Last update: 2020-05-19
  *
  * Thanks to James Nimmo for the massive work with the Python IntesisHome module
  * (https://github.com/jnimmo/pyIntesisHome)
@@ -187,7 +187,7 @@ void generateEvent(tData) {
 	}
 }
 
-void updateDeviceState(Long deviceId, Integer uid, short value) {
+void updateDeviceState(Long deviceId, Integer uid, Short value) {
 	if (uid == 60002) return
 //	if (logEnable) log.debug "[IntesisHome.thermostat] updateDeviceState: deviceId=${deviceId}, uid=${uid}, value=${value}"
 
@@ -368,7 +368,7 @@ void updateOperatingState() {
 	}
 }
 
-void setPointAdjust(double value) {
+void setPointAdjust(Double value) {
 	Integer intVal = getTemperatureScale() == 'C' ? Math.round(value*10) : Math.round( ((value - 32.0) * (5.0/9.0)) * 10.0 )
 	String myUnit = "\u00b0${getTemperatureScale()}"
 	if (txtEnable) log.info "[IntesisHome.thermostat] setPointAdjust to: $intVal  from $value $myUnit"
@@ -380,12 +380,12 @@ void setPointAdjust(double value) {
 	parent.sendMsg(message)
 }
 
-void setHeatingSetpoint(double value) {
+void setHeatingSetpoint(Double value) {
 	if (txtEnable) log.info "[IntesisHome.thermostat] setHeatingSetpoint to: $value"
 	setPointAdjust(value)
 }
 
-void setCoolingSetpoint(double value) {
+void setCoolingSetpoint(Double value) {
 	if (txtEnable) log.info "[IntesisHome.thermostat] setCoolingSetpoint to: $value"
 	setPointAdjust(value)
 }
