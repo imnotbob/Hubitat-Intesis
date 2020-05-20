@@ -28,7 +28,7 @@ definition(
 	iconUrl: "",
 	iconX2Url: "",
 	iconX3Url: "",
-//	importUrl: "https://raw.githubusercontent.com/tonesto7/nst-manager-he/master/apps/nstManager.groovy",
+	importUrl: "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/apps/IntesisConnect.groovy"
 )
 
 preferences {
@@ -237,9 +237,9 @@ def getParams() {
 }
 
 // --- "Constants" & Global variables
-def getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
-def getINTESIS_CMD_STATUS() { return '{"status":{"hash":"x"},"config":{"hash":"x"}}' }
-def getINTESIS_API_VER() { return "2.1" }
+String getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
+//def getINTESIS_CMD_STATUS() { return '{"status":{"hash":"x"},"config":{"hash":"x"}}' }
+//def getINTESIS_API_VER() { return "2.1" }
 
 def sendMsg(String msg) {
 	def tdev = getTelnetDev()

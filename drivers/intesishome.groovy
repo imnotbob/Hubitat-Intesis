@@ -135,7 +135,7 @@ void initialize() {
 	setModes()
 }
 
-def installed() {
+void installed() {
 	String tempscale = getTemperatureScale()
 	def tz = location.timeZone
 	if(!tz || !(tempscale == "F" || tempscale == "C")) {
@@ -148,7 +148,7 @@ def installed() {
 		sendEvent(name:"coolingSetpoint", value:28)
 	}
 	initialize()
-	return [:]
+	return
 }
 
 void logsOff() {
@@ -158,13 +158,13 @@ void logsOff() {
 	device.updateSetting("txtEnable",[value:"false",type:"bool"])
 }
 
-def updated() {
+void updated() {
 	debug "updated", "debug logging is: ${logEnable == true}"
 	debug "updated", "description logging is: ${txtEnable == true}"
 	if (logEnable) runIn(1800,logsOff)
 
 	initialize()
-	return [:]
+	return
 }
 
 void setModes() {
