@@ -27,7 +27,7 @@
       "description": "Monitor enPhase Solar Production for Hubitat"
     },
     {
-      "name": "Vacation Lighting Directory",
+      "name": "Vacation Lighting Director",
       "category": "Security",
       "location": "https://raw.githubusercontent.com/imnotbob/vacation-lighting-director/beta/packageManager.json",
       "description": "Vacation Lighting Director controls lights when away"
