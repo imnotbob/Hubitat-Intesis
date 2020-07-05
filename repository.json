@@ -5,30 +5,45 @@
     {
       "name": "IntesisHome",
       "category": "Integrations",
+      "tags": [
+	"Climate Control", "LAN"
+      ],
       "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/packageManager.json",
       "description": "intesisHome Thermostat for Hubitat"
     },
     {
       "name": "TankUtility",
       "category": "Integrations",
+      "tags": [
+	"Energy Monitoring", "LAN", "Monitoring"
+      ],
       "location": "https://raw.githubusercontent.com/imnotbob/tankUtility/master/packageManager.json",
       "description": "tankUtility Propane tank monitoring for Hubitat"
     },
     {
       "name": "NuHeat",
       "category": "Integrations",
+      "tags": [
+	"Climate Control", "LAN"
+      ],
       "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-NuHeat/master/packageManager.json",
       "description": "nuHeat Signature Thermostat for Hubitat"
     },
     {
       "name": "Enphase Solar",
       "category": "Integrations",
+      "tags": [
+	"Energy Monitoring", "LAN", "Monitoring"
+      ],
       "location": "https://raw.githubusercontent.com/imnotbob/EnvoyHE/master/packageManager.json",
       "description": "Monitor enPhase Solar Production for Hubitat"
     },
     {
       "name": "Vacation Lighting Director",
       "category": "Security",
+      "tags": [
+	"Automations & Groups", "LAN", "Safety & Security", "Tools & Utilities"
+      ],
       "location": "https://raw.githubusercontent.com/imnotbob/vacation-lighting-director/beta/packageManager.json",
       "description": "Vacation Lighting Director controls lights when away"
     }
