@@ -10,7 +10,8 @@
       "namespace": "imnotbob",
       "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-Intesis/master/apps/IntesisConnect.groovy",
       "required": true,
-      "oauth": false
+      "oauth": false,
+      "primary": true
     }
   ],
   "drivers": [
