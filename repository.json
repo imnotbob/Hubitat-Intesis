@@ -46,6 +46,15 @@
       ],
       "location": "https://raw.githubusercontent.com/imnotbob/vacation-lighting-director/beta/packageManager.json",
       "description": "Vacation Lighting Director controls lights when away"
+    },
+    {
+      "name": "NOAA Weather Alerts",
+      "category": "Weather",
+      "location": "https://raw.githubusercontent.com/imnotbob/Hubitat-4/master/NOAA/packageManifest.json",
+      "description": "NOAA Weather Alerts provides weather alert notifications for USA based users through TTS using any or all Music devices, Echo Speaks devices, Google/Speech devices, PushOver Notifications devices, Hubitat app, and Dashboard tiles. NOAA provides granular customization to enable users to watch for specific events, severity, urgency while also using global variables to customize alert notification messages.",
+      "tags": [
+	"Weather", "LAN", "Safety & Security", "Tools & Utilities"
+      ]
     }
   ]
 }
