@@ -3,7 +3,7 @@
  *
  * Author: ERS
  *       based off device work by Martin Blomgren
- * Last update: 2019-05-19
+ * Last update: 2020-11-06
  *
  * Licensed under the Apache License, Version 2.0 (the 'License'); you may not
  * use this file except in compliance with the License. You may obtain a copy
@@ -96,7 +96,8 @@ void pollStatus() {
 		def params = [
 			uri	: INTESIS_URL,
 			contentType: "application/x-www-form-urlencoded",
-			body	: 'username=' + username + '&password=' + password + '&cmd={"status":{"hash":"x"},"config":{"hash":"x"}}&version=1.8.5'
+			body	: 'username=' + username + '&password=' + password + '&cmd={"status":{"hash":"x"},"config":{"hash":"x"}}&version=1.8.5',
+			timeout: 20
 		]
 
 		try {
