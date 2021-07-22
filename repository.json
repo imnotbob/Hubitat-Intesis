@@ -55,6 +55,15 @@
       "tags": [
 	"Weather", "LAN", "Safety & Security", "Tools & Utilities"
       ]
+    },
+    {
+      "name": "Husqvarna AutoMower Manager",
+      "category": "Integrations",
+      "tags": [
+	"Automations & Groups", "LAN", "Misc. Devices", "Tools & Utilities"
+      ],
+      "location": "https://raw.githubusercontent.com/imnotbob/AutoMower/master/HE/packageManager.json",
+      "description": "AutoMower Integration for Hubitat - control and monitor your Husqvarna AutoMower on your Hubitat system"
     }
   ]
 }
