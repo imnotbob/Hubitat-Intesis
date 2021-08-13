@@ -31,11 +31,13 @@
  * SOFTWARE.
  *
  */
-def version() {"v0.1"}
+//file:noinspection unused
+//file:noinspection SpellCheckingInspection
+static String version() {"v0.1"}
 
+import groovy.json.JsonSlurper
 import groovy.transform.Field
 import hubitat.helper.InterfaceUtils
-import groovy.json.JsonSlurper
 
 metadata {
 	definition (name: "IntesisHome Telnet", namespace: 'imnotbob', author: "ERS") {
@@ -71,7 +73,7 @@ void initialize() {
 	debug "initialize", ""
 	state.enabled = true
 	if((Boolean)state.connected) checkLastReceived()
-	else connect()
+	else connect(false)
 }
 
 void installed() {
@@ -93,7 +95,7 @@ void updated() {
 	initialize()
 }
 
-void connect() {
+void connect(Boolean retry=true) {
 	state.enabled = true
 	if(!(Boolean)state.connected) {
 		def myVars = parent.getParams()
@@ -120,9 +122,13 @@ void connect() {
 			connectionMade()
 		} else {
 			//Get connection details
-			debug("connect:", "something missing ${state.enabled} ${state.server} ${state.serverPort} ${state.token}")
+			if(!retry) debug("connect:", "something missing ${state.enabled} ${state.server} ${state.serverPort} ${state.token}")
 			if(state.enabled) {
-				parent.telnetDown(state.enabled)
+				parent.telnetDown(state.enabled) // this will attempt to gather missing server,port,token data (24 seconds)
+				if(retry){
+					runIn(40, connect)
+					debug("connect:", "something missing ${state.enabled} ${state.server} ${state.serverPort} ${state.token} scheduled retry in 40 seconds")
+				}
 			}
 		}
 	} else {
@@ -132,7 +138,7 @@ void connect() {
 
 void connectionMade() {
 	// Authenticate
-	String authMsg = '{"command":"connect_req","data":{"token":' + state.token + '}}'
+	String authMsg = '{"command":"connect_req","data":{"token":' + (String)state.token + '}}'
 	if (logEnable) debug "connectionMade:", "authMsg ${authMsg}"
 	sendHubCommand(new hubitat.device.HubAction(authMsg, hubitat.device.Protocol.TELNET))
 }
@@ -172,7 +178,7 @@ void parse(String message) {
 	switch (messageJson.command) {
 		case "connect_rsp":
 			if (messageJson.data.status == "ok") {
-				sendEvent(name: "Telnet", value: "Connected");
+				sendEvent(name: "Telnet", value: "Connected")
 				parent.telnetUp()
 			}
 			break
@@ -239,7 +245,7 @@ void configure() {
 	initialize()
 }
 
-private String createLogString(String context, String message) {
+private static String createLogString(String context, String message) {
 	return "[IntesisHome Telnet." + context + "] " + message
 }
 

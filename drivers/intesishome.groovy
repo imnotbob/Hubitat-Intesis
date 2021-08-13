@@ -31,11 +31,13 @@
  * SOFTWARE.
  *
  */
-def version() {"v0.1"}
+//file:noinspection unused
+//file:noinspection SpellCheckingInspection
+static String version() {"v0.1"}
 
 import groovy.transform.Field
-import hubitat.helper.InterfaceUtils
 import groovy.json.JsonSlurper
+import hubitat.helper.InterfaceUtils
 
 metadata {
 	definition (name: "IntesisHome HVAC", namespace: 'imnotbob', author: "ERS") {
@@ -84,16 +86,16 @@ metadata {
 }
 
 // --- "Constants" & Global variables
-def getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
-def getINTESIS_CMD_STATUS() { return '{"status":{"hash":"x"},"config":{"hash":"x"}}' }
-def getINTESIS_API_VER() { return "2.1" }
+static String getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
 
-def getAPI_DISCONNECTED() { return "Disconnected" }
-def getAPI_CONNECTING() { return "Connecting" }
-def getAPI_AUTHENTICATED() { return "Connected" }
-def getAPI_AUTH_FAILED() { return "Wrong username/password" }
+static String getINTESIS_CMD_STATUS() { return '{"status":{"hash":"x"},"config":{"hash":"x"}}' }
+static String getINTESIS_API_VER() { return "2.1" }
+static String getAPI_DISCONNECTED() { return "Disconnected" }
+static String getAPI_CONNECTING() { return "Connecting" }
+static String getAPI_AUTHENTICATED() { return "Connected" }
+static String getAPI_AUTH_FAILED() { return "Wrong username/password" }
 
-Map getINTESIS_MAP() {
+static Map getINTESIS_MAP() {
 	String map = """
 	{
 	"1": {"name": "power", "values": {"0": "off", "1": "on"}},
@@ -113,10 +115,10 @@ Map getINTESIS_MAP() {
 	}
 	"""
 /* """ */
-	return new JsonSlurper().parseText(map)
+	return (Map) new JsonSlurper().parseText(map)
 }
 
-Map getCOMMAND_MAP() {
+static Map getCOMMAND_MAP() {
 	String cmd = """
 	{
 	"power": {"uid": 1, "values": {"off": 0, "on": 1}},
@@ -127,7 +129,7 @@ Map getCOMMAND_MAP() {
 	"setpoint": {"uid": 9}
 	}
 	"""
-	return new JsonSlurper().parseText(cmd)
+	return (Map) new JsonSlurper().parseText(cmd)
 }
 
 void initialize() {
@@ -148,7 +150,6 @@ void installed() {
 		sendEvent(name:"coolingSetpoint", value:28)
 	}
 	initialize()
-	return
 }
 
 void logsOff() {
@@ -164,7 +165,6 @@ void updated() {
 	if (logEnable) runIn(1800,logsOff)
 
 	initialize()
-	return
 }
 
 void setModes() {
@@ -369,12 +369,12 @@ void updateOperatingState() {
 }
 
 void setPointAdjust(Double value) {
-	Integer intVal = getTemperatureScale() == 'C' ? Math.round(value*10) : Math.round( ((value - 32.0) * (5.0/9.0)) * 10.0 )
+	Integer intVal = (Integer) (getTemperatureScale() == 'C' ? Math.round(value * 10) : Math.round(((value - 32.0) * (5.0 / 9.0)) * 10.0))
 	String myUnit = "\u00b0${getTemperatureScale()}"
 	if (txtEnable) log.info "[IntesisHome.thermostat] setPointAdjust to: $intVal  from $value $myUnit"
 
 	//def uid = 9
-	Integer uid = COMMAND_MAP['setpoint']['uid']
+	Integer uid = COMMAND_MAP['setpoint']['uid'] as Integer
 	String message = '{"command":"set","data":{"deviceId":' + (Long)state.deviceId + ',"uid":' + uid + ',"value":' + intVal + ',"seqNo":0}}'
 
 	parent.sendMsg(message)
@@ -397,8 +397,8 @@ void setThermostatMode(String mode) {
 		setPower('off')
 	}
 	if(mode == 'emergency heat') mode = 'heat'
-	Integer uid = COMMAND_MAP['mode']['uid']
-	Integer value = COMMAND_MAP['mode'].values[mode]
+	Integer uid = COMMAND_MAP['mode']['uid'] as Integer
+	Integer value = COMMAND_MAP['mode'].values[mode] as Integer
 
 	String message = '{"command":"set","data":{"deviceId":' + (Long)state.deviceId + ',"uid":' + uid + ',"value":' + value + ',"seqNo":0}}'
 	if (logEnable) log.debug "[IntesisHome.thermostat] send message: $message"
@@ -409,8 +409,8 @@ void setThermostatFanMode(String mode) {
 	if (txtEnable) log.info "[IntesisHome.thermostat] setThermostatFanMode to: $mode"
 	//supportedThermostatFanModes : [auto, quiet, low, medium, high]
 	if(mode=='on' || mode=='circulate') { fanOn(); return }
-	Integer uid = COMMAND_MAP['fan_speed']['uid']
-	Integer value = COMMAND_MAP['fan_speed'].values[mode]
+	Integer uid = COMMAND_MAP['fan_speed']['uid'] as Integer
+	Integer value = COMMAND_MAP['fan_speed'].values[mode] as Integer
 
 	String message = '{"command":"set","data":{"deviceId":' + (Long)state.deviceId + ',"uid":' + uid + ',"value":' + value + ',"seqNo":0}}'
 	if (logEnable) log.debug "[IntesisHome.thermostat] send message: $message"
@@ -447,8 +447,8 @@ void setSpeed(String fanspeed) {
 void setPower(String mode) {
 	if (txtEnable) log.info "[IntesisHome.thermostat] setPower to: $mode"
 	//supports : [off, on]
-	Integer uid = COMMAND_MAP['power']['uid']
-	Integer value = COMMAND_MAP['power'].values[mode]
+	Integer uid = COMMAND_MAP['power']['uid'] as Integer
+	Integer value = COMMAND_MAP['power'].values[mode] as Integer
 
 	String message = '{"command":"set","data":{"deviceId":' + (Long)state.deviceId + ',"uid":' + uid + ',"value":' + value + ',"seqNo":0}}'
 	if (logEnable) log.debug "[IntesisHome.thermostat] send message: $message"
@@ -514,7 +514,7 @@ void configure() {
 	initialize()
 }
 
-private String createLogString(String context, String message) {
+private static String createLogString(String context, String message) {
 	return "[IntesisHome.thermostat." + context + "] " + message
 }
 

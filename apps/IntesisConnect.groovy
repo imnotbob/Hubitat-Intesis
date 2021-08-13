@@ -18,6 +18,9 @@
  * under the License.
  */
 
+//file:noinspection SpellCheckingInspection
+//file:noinspection unused
+
 definition(
 	name: 'IntesisHome Connect',
 	namespace: 'imnotbob',
@@ -131,35 +134,63 @@ void handlePollResponse(response, data) {
 
 	//if (logEnable) debug("responseJson", "$responseJson")
 
-	def devMap = [:]
-	def instMap = [:]
+	List<Map> devList = []
+	Map idevMap = [:]
+	//Map devMap = [:]
+	Map instMap = [:]
 	atomicState.server = responseJson['config']['serverIP']
 	atomicState.serverPort = responseJson['config']['serverPort']
 	atomicState.token = responseJson['config']['token']
 
 	responseJson['config']['inst'].each { installation ->
 
-		instMap["${installation.name}"] = installation
+		instMap."${installation.name}" = installation
 		if (logEnable) debug("Found installation", "${installation.name} total installations: ${instMap.size()}")
 		state.installationMap = instMap
 		//log.warn "Installation: $installation"
 
 		installation['devices'].each { device ->
-			devMap["${device.id}"] = [:] + device
-			devMap["${device.id}"].valMap = [:]
+			idevMap = [:] + device
+			idevMap.valMap = [:]
+			responseJson['status']['status'].each { status ->
+				if(status.deviceId.toString() == device.id.toString())
+					idevMap.valMap."${status.uid}" = status.value
+			}
+			devList << idevMap
+			state.deviceList =  devList
+/*
+			devMap."${device.id}" = [:] + device
+			devMap."${device.id}".valMap = [:]
 			if (logEnable) debug("Found device", "${device.name}, total devices ${devMap.size()}")
 			//state.deviceId = device.id
-			state.deviceMap =  devMap
+			state.deviceMap =  devMap */
 		}
 	}
+	/*
 	// Update state attributes
 	responseJson['status']['status'].each { status ->
-		devMap["${status.deviceId}"].valMap."${status.uid}" = status.value
+		devMap."${status.deviceId}".valMap."${status.uid}" = status.value
 		state.deviceMap =  devMap
-	}
+	}*/
+	state.remove('deviceMap')
+
 	def child
-	devMap.each { dev ->
-		def t0 =  "${dev.value.id}"
+	devList.each { dev ->
+		String t0 = (String)dev.id
+		def tdev = getChildDevice(t0)
+		if(tdev) {
+			//log.warn "found device ${tdev}"
+		} else {
+			child = addChildDevice( 'imnotbob', 'IntesisHome HVAC', t0, null, [label: "${dev.name}"])
+			debug(
+					"handlePollResponse", "Created ${child.displayName} with id: " +
+					"${child.id}, MAC: ${child.deviceNetworkId}"
+			)
+			pause(2000)
+		}
+	}
+/*	devMap.each { dev ->
+		String t0 =  "${dev.value.id}"
 		def tdev = getChildDevice(t0)
 		if(tdev) {
 			//log.warn "found device ${tdev}"
@@ -171,7 +202,7 @@ void handlePollResponse(response, data) {
 			)
 			pause(2000)
 		}
-	}
+	} */
 
 	def child1 = getTelnetDev()
 	if(!child1) {
@@ -183,13 +214,21 @@ void handlePollResponse(response, data) {
 		pause(2000)
 	}
 
-	devMap.each { dev ->
+	devList.each { dev ->
+		String t0 =  (String)dev.id
+		def tdev = getChildDevice(t0)
+		if(tdev) {
+			tdev.generateEvent(dev)
+		} else { debug "handlePollResponse", "child not found $t0" }
+		state.lastRefresh=now()
+	}
+/*	devMap.each { dev ->
 		def t0 =  "${dev.value.id}"
 		def tdev = getChildDevice(t0)
 		if(tdev) {
 			tdev.generateEvent(dev.value)
 		} else { debug "handlePollResponse", "child not found $t0" }
-	}
+	} */
 
 	if(child1) child1.connect()
 	else debug "handlePollResponse", "Telnet device not found"
@@ -227,7 +266,7 @@ def getTelnetDev() {
 }
 
 void updateDeviceState(Long deviceId, Integer uid, Short value) {
-	def t0 =  "${deviceId}"
+	String t0 =  deviceId.toString()
 	def tdev = app.getChildDevice(t0)
 	if(tdev) tdev.updateDeviceState(deviceId, uid, value)
 	else log.warn "no tdev $deviceId $uid  $value"
@@ -238,7 +277,7 @@ def getParams() {
 }
 
 // --- "Constants" & Global variables
-String getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
+static String getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
 //def getINTESIS_CMD_STATUS() { return '{"status":{"hash":"x"},"config":{"hash":"x"}}' }
 //def getINTESIS_API_VER() { return "2.1" }
 
@@ -252,7 +291,7 @@ void refresh() {
 	if (logEnable) log.debug "refresh"
 }
 
-private String createLogString(String context, String message) {
+private static String createLogString(String context, String message) {
 	return "[IntesisHome Connect." + context + "] " + message
 }
 
