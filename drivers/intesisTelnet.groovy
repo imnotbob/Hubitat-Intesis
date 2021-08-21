@@ -99,8 +99,8 @@ void connect(Boolean retry=true) {
 	state.enabled = true
 	if(!(Boolean)state.connected) {
 		def myVars = parent.getParams()
-		state.server = myVars.server
-		state.serverPort = myVars.port
+		state.server = myVars.server?.toString()
+		state.serverPort = myVars.port?.toInteger()
 		state.token = myVars.token
 		if (state.enabled && state.server && state.serverPort && state.token) {
 			debug "connect:", " session to IntesisHome at ${state.server}:${state.serverPort}"
@@ -109,7 +109,7 @@ void connect(Boolean retry=true) {
 			try {
 				state.connected = true
 				//open telnet connection
-				telnetConnect([termChars: [125,125], terminalType: 'VT100'], state.server, state.serverPort, null, null)
+				telnetConnect([termChars: [125,125], terminalType: 'VT100'], (String)state.server, (Integer)state.serverPort, (String)null, (String)null)
 			}
 			catch(e) {
 				state.connected = false
