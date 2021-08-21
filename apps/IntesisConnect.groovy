@@ -3,7 +3,7 @@
  *
  * Author: ERS
  *       based off device work by Martin Blomgren
- * Last update: 2020-11-06
+ * Last update: 2021-08-21
  *
  * Licensed under the Apache License, Version 2.0 (the 'License'); you may not
  * use this file except in compliance with the License. You may obtain a copy

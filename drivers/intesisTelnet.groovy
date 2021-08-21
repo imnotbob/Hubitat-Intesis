@@ -3,7 +3,7 @@
  *
  * Author: ERS
  *       based off device work by Martin Blomgren
- * Last update: 2019-05-19
+ * Last update: 2021-08-21
  *
  * Thanks to James Nimmo for the massive work with the Python IntesisHome module
  * (https://github.com/jnimmo/pyIntesisHome)
