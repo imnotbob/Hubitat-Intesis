@@ -21,6 +21,8 @@
 //file:noinspection SpellCheckingInspection
 //file:noinspection unused
 
+import groovy.transform.Field
+
 definition(
 	name: 'IntesisHome Connect',
 	namespace: 'imnotbob',
@@ -51,7 +53,7 @@ def mainPage() {
 			input "password", "password", title: "Password"
 		}
 
-		if(username && password) {
+		if((String)settings.username && (String)settings.password) {
 			section("Disable updating here") {
 				input "enabled", "bool", defaultValue: "true", title: "Enabled?"
 			}
@@ -77,8 +79,8 @@ void updated() {
 void initialize() {
 	//log.debug 'Initializing'
 	unschedule()
-	if (logEnable) runIn(1800,logsOff)
-	if(enabled) pollStatus()
+	if ((Boolean)settings.logEnable) runIn(1800,logsOff)
+	if((Boolean)settings.enabled) pollStatus()
 	else {
 		def tdev = getTelnetDev()
 		if(tdev) {
@@ -94,12 +96,12 @@ void logsOff() {
 }
 
 void pollStatus() {
-	if (logEnable) debug("pollStatus()", "")
-	if(username && password && enabled) {
-		def params = [
+	debug("pollStatus()", "")
+	if((String)settings.username && (String)settings.password && (Boolean)settings.enabled) {
+		Map params = [
 			uri	: INTESIS_URL,
 			contentType: "application/x-www-form-urlencoded",
-			body	: 'username=' + username + '&password=' + password + '&cmd={"status":{"hash":"x"},"config":{"hash":"x"}}&version=1.8.5',
+			body	: 'username=' + (String)settings.username + '&password=' + (String)settings.password + '&cmd={"status":{"hash":"x"},"config":{"hash":"x"}}&version=1.8.5',
 			timeout: 20
 		]
 
@@ -109,30 +111,33 @@ void pollStatus() {
 			queuePollStatus(600)
 			error("pollStatus", "Error polling", e)
 		}
-	} else { log.warn "missing settings $username $enabled" }
+	} else { log.warn "missing settings ${(String)settings.username} ${(Boolean)settings.enabled}" }
 }
 
 void handlePollResponse(response, data) {
-	if (logEnable) debug("handlePollResponse()", "")
-	def responseError = response.hasError()
+	debug("handlePollResponse()", "")
+	Boolean responseError = response.hasError()
 
-	def responseJson
-	if (!responseError) responseJson = parseJson(response.data)
+	def responseJson=null
+	try {
+		//if (!responseError) responseJson = parseJson(response.data)
+		responseJson = parseJson(response.data)
+	} catch(ignored) {}
 
 	if (responseError || responseJson?.errorMessage) {
 		queuePollStatus(900)
-		debug("hasError", "$responseError")
+		error("hasError", "$responseError")
 		def responseErrorStatus = response.getStatus()
-		debug("errorStatus", "$responseErrorStatus")
+		error("errorStatus", "$responseErrorStatus")
 		def responseErrorData = response.getErrorData()
-		debug("errorData", "$responseErrorData")
+		error("errorData", "$responseErrorData")
 		def responseErrorMessage= response.getErrorMessage()
-		debug("errorMessage", "$responseErrorMessage")
-		debug("errorjsonData", "$responseJson")
+		error("errorMessage", "$responseErrorMessage")
+		error("errorjsonData", "$responseJson")
 		return
 	}
 
-	//if (logEnable) debug("responseJson", "$responseJson")
+	//debug("responseJson", "$responseJson")
 
 	List<Map> devList = []
 	Map idevMap = [:]
@@ -145,7 +150,7 @@ void handlePollResponse(response, data) {
 	responseJson['config']['inst'].each { installation ->
 
 		instMap."${installation.name}" = installation
-		if (logEnable) debug("Found installation", "${installation.name} total installations: ${instMap.size()}")
+		debug("Found installation", "(${installation.name}) total installations: ${instMap.size()}")
 		state.installationMap = instMap
 		//log.warn "Installation: $installation"
 
@@ -161,7 +166,7 @@ void handlePollResponse(response, data) {
 /*
 			devMap."${device.id}" = [:] + device
 			devMap."${device.id}".valMap = [:]
-			if (logEnable) debug("Found device", "${device.name}, total devices ${devMap.size()}")
+			debug("Found device", "${device.name}, total devices ${devMap.size()}")
 			//state.deviceId = device.id
 			state.deviceMap =  devMap */
 		}
@@ -172,7 +177,7 @@ void handlePollResponse(response, data) {
 		devMap."${status.deviceId}".valMap."${status.uid}" = status.value
 		state.deviceMap =  devMap
 	}*/
-	state.remove('deviceMap')
+	state.remove('deviceMap') // cleanup old version state
 
 	def child
 	devList.each { dev ->
@@ -208,7 +213,7 @@ void handlePollResponse(response, data) {
 	if(!child1) {
 		child1 = addChildDevice( 'imnotbob', 'IntesisHome Telnet', 'IntTelnet', null, [label: "IntesisHome Telnet Driver"])
 		debug(
-			"halePollResponse", "Created ${child1.displayName} with id: " +
+			"handlePollResponse", "Created ${child1.displayName} with id: " +
 			"${child1.id}, MAC: ${child1.deviceNetworkId}"
 		)
 		pause(2000)
@@ -231,32 +236,32 @@ void handlePollResponse(response, data) {
 	} */
 
 	if(child1) child1.connect()
-	else debug "handlePollResponse", "Telnet device not found"
+	else error "handlePollResponse", "Telnet device not found"
 }
 
 void telnetUp() {
-	if (logEnable) debug("telnetUp", "")
+	debug("telnetUp", "")
 	atomicState.telnet = true
 }
 
 void telnetDown(Boolean runPoll=false) {
-	if (logEnable) debug("telnetDown(${runPoll})", "")
+	debug("telnetDown(${runPoll})", "")
 	atomicState.telnet = false
 	atomicState.server = null
 	atomicState.serverPort = null
 	atomicState.token = null
 	if(runPoll) runIn(24, pollStatus)
-	else if(enabled) runIn(900, pollStatus)
+	else if((Boolean)settings.enabled) runIn(900, pollStatus)
 }
 
 void queuePollStatus(Integer delay=3) {
-	if (logEnable) debug("queuePollStatus()", "")
+	debug("queuePollStatus()", "")
 	runIn(delay, pollStatus)
 }
 
 def getTelnetDev() {
 	def tdev = app.getChildDevices()
-	def myDev
+	def myDev=null
 	tdev.each { dev ->
 		if(dev?.typeName in ['IntesisHome Telnet']) {
 			myDev = dev
@@ -272,41 +277,34 @@ void updateDeviceState(Long deviceId, Integer uid, Short value) {
 	else log.warn "no tdev $deviceId $uid  $value"
 }
 
-def getParams() {
+Map getParams() {
 	return [server: atomicState.server, port: atomicState.serverPort, token: atomicState.token]
 }
 
 // --- "Constants" & Global variables
-static String getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
+@Field static final String INTESIS_URL= "https://user.intesishome.com/api.php/get/control"
+//static String getINTESIS_URL() { return "https://user.intesishome.com/api.php/get/control" }
 //def getINTESIS_CMD_STATUS() { return '{"status":{"hash":"x"},"config":{"hash":"x"}}' }
 //def getINTESIS_API_VER() { return "2.1" }
 
-def sendMsg(String msg) {
+void sendMsg(String msg) {
 	def tdev = getTelnetDev()
 	if(tdev) tdev.sendMsg(msg)
 	else log.warn "did not find telnet device"
 }
 
 void refresh() {
-	if (logEnable) log.debug "refresh"
+	if ((Boolean)settings.logEnable) log.debug "refresh"
 }
 
 private static String createLogString(String context, String message) {
 	return "[IntesisHome Connect." + context + "] " + message
 }
 
-private void error(String context, String text, Exception e) {
-	error(context, text, e, true)
-}
-
-private void error(String context, String text, Exception e, Boolean remote) {
+private void error(String context, String text, Exception e=null, Boolean remote=true) {
 	log.error(createLogString(context, text) + e?.message)
 }
 
-private void debug(String context, String text) {
-	debug(context, text, true)
-}
-
-private void debug(String context, String text, Boolean remote) {
-	log.debug(createLogString(context, text))
+private void debug(String context, String text, Boolean remote=true) {
+	if ((Boolean)settings.logEnable) log.debug(createLogString(context, text))
 }

@@ -2,7 +2,7 @@
   "packageName": "intesisHome",
   "author": "nh.schottfam",
   "minimumHEVersion": "2.1.9",
-  "dateReleased": "2020-05-17",
+  "dateReleased": "2021-08-22",
   "apps": [
     {
       "id": "6d417f09-a857-4082-b06d-9e853a3ac472",
@@ -30,7 +30,7 @@
       "required": true
     }
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "releaseNotes": "Latest release",
   "communityLink": "https://community.hubitat.com/t/intesishome-integration/41142"
 }

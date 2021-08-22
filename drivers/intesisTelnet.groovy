@@ -1,5 +1,5 @@
 /**
- *  Intesis Telnet 0.1
+ *  Intesis Telnet 0.2
  *
  * Author: ERS
  *       based off device work by Martin Blomgren
@@ -33,7 +33,7 @@
  */
 //file:noinspection unused
 //file:noinspection SpellCheckingInspection
-static String version() {"v0.1"}
+static String version() {"v0.2"}
 
 import groovy.json.JsonSlurper
 import groovy.transform.Field
@@ -87,9 +87,9 @@ void logsOff() {
 
 void updated() {
 	unschedule()
-	debug "updated", "debug logging is: ${logEnable == true}"
-	debug "updated", "description logging is: ${txtEnable == true}"
-	if (logEnable) runIn(1800,logsOff)
+	debug "updated", "debug logging is: ${(Boolean)settings.logEnable == true}"
+	debug "updated", "description logging is: ${(Boolean)settings.txtEnable == true}"
+	if ((Boolean)settings.logEnable) runIn(1800,logsOff)
 	runEvery10Minutes(checkLastReceived)
 
 	initialize()
@@ -113,7 +113,7 @@ void connect(Boolean retry=true) {
 			}
 			catch(e) {
 				state.connected = false
-				if (logEnable) debug "connect:", "initialize error ${e.message}"
+				debug "connect:", "initialize error ${e.message}"
 				error "connect:", "Telnet connect failed in connect()", e
 				parent.telnetDown()
 				return
@@ -139,7 +139,7 @@ void connect(Boolean retry=true) {
 void connectionMade() {
 	// Authenticate
 	String authMsg = '{"command":"connect_req","data":{"token":' + (String)state.token + '}}'
-	if (logEnable) debug "connectionMade:", "authMsg ${authMsg}"
+	debug "connectionMade:", "authMsg ${authMsg}"
 	sendHubCommand(new hubitat.device.HubAction(authMsg, hubitat.device.Protocol.TELNET))
 }
 
@@ -149,20 +149,21 @@ void sendMsg(String msg) {
 }
 
 void stop() {
-	debug "stop", ""
+	debug("stop", "")
 	state.enabled = false
 //	device.updateSetting("enabled",[value:"false",type:"bool"])
 	if((Boolean)state.connected) {
 		state.connected = false
 		telnetClose()
 	}
-	debug "stop", "Telnet connection dropped..."
+	debug("stop", "Telnet connection dropped...")
 	sendEvent(name: "Telnet", value: "Disconnected")
 	parent.telnetDown()
 }
 
 // Parse incoming device messages to generate events
 void parse(String message) {
+	debug "parse", "received message ${message}"
 	if(!state.enabled) { stop(); return }
 	if (message.contains('"uid":60002')) return // rssi
 
@@ -173,7 +174,7 @@ void parse(String message) {
 	def jsonSlurper = new JsonSlurper()
 	def messageJson = jsonSlurper.parseText(message + '}}')
 
-	if (logEnable) debug "parse", "messageJson: ${messageJson}"
+	debug "parse", "messageJson: ${messageJson}"
 
 	switch (messageJson.command) {
 		case "connect_rsp":
@@ -193,6 +194,7 @@ void parse(String message) {
 			break
 
 		default:
+			debug "parse", "no action for message ${message}"
 			break
 	}
 	//[command:connect_rsp, data:[status:ok]]
@@ -219,7 +221,7 @@ void endConnection() {
 }
 
 void telnetStatus(String status) {
-	if (logEnable) debug "telnetStatus", "${status}"
+	debug "telnetStatus", "${status}"
 
 	if (status == "receive error: Stream is closed") {
 		debug "telnetStatus", "Telnet connection dropped..."
@@ -227,7 +229,7 @@ void telnetStatus(String status) {
 		parent.telnetDown(state.enabled)
 		if(!state.enabled) debug "telnetStatus", "Telnet driver disabled"
 	} else {
-		if (txtEnable) debug "telnetStatus", "OK, ${status}"
+		info "telnetStatus", "OK, ${status}"
 		state.connected = true
 		sendEvent(name: "Telnet", value: "Connected")
 		parent.telnetUp()
@@ -237,11 +239,11 @@ void telnetStatus(String status) {
 def setValue() {}
 
 void refresh() {
-	if (logEnable) debug "refresh", ""
+	debug "refresh", ""
 }
 
 void configure() {
-	if (txtEnable) debug "Configure", "Reporting and Bindings."
+	debug "Configure", "Reporting and Bindings."
 	initialize()
 }
 
@@ -249,18 +251,14 @@ private static String createLogString(String context, String message) {
 	return "[IntesisHome Telnet." + context + "] " + message
 }
 
-private void error(String context, String text, Exception e) {
-	error(context, text, e, true)
-}
-
-private void error(String context, String text, Exception e, Boolean remote) {
+private void error(String context, String text, Exception e=null, Boolean remote=true) {
 	log.error(createLogString(context, text) + e?.message)
 }
 
-private void debug(String context, String text) {
-	debug(context, text, true)
+private void debug(String context, String text, Boolean remote=true) {
+	if ((Boolean)settings.logEnable) log.debug(createLogString(context, text))
 }
 
-private void debug(String context, String text, Boolean remote) {
-	log.debug(createLogString(context, text))
+private void info(String context, String text, Boolean remote=true) {
+	if ((Boolean)settings.txtEnable) log.info(createLogString(context, text))
 }
